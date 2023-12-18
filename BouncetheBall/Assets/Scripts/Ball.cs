@@ -7,14 +7,15 @@ public class Ball : MonoBehaviour
     public GameManager gameManager;
     void Start()
     {
-        
+    
     }
 
     
     void Update()
     {
-        
+      
     }
+  
     private void OnTriggerEnter(Collider collision)
     {
         if (collision.gameObject.CompareTag("Basket"))
@@ -23,8 +24,26 @@ public class Ball : MonoBehaviour
         }
         if (collision.gameObject.CompareTag("Down"))
         {
-            Time.timeScale = 0;
+           
+            gameManager.Lose();
+            
+        }
+        if (collision.gameObject.CompareTag("DownBasket"))
+        {
+            gameManager.DownorUpBasket("DownBasket");
+        }
+        if (collision.gameObject.CompareTag("UpBasket"))
+        {
+            gameManager.DownorUpBasket("UpBasket");
+        }
+        
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("UP"))
+        {
+            gameManager.DownorUpBasket("UP");
         }
     }
-   
+
 }

@@ -6,6 +6,11 @@ TagManager:
   tags:
   - Basket
   - Down
+  - DownBasket
+  - UpBasket
+  - UP
+  - Expansion
+  - Balls
   layers:
   - Default
   - TransparentFX

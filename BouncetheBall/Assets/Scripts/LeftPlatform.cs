@@ -15,5 +15,9 @@ public class LeftPlatform : MonoBehaviour
         {
             other.gameObject.GetComponent<Rigidbody>().AddForce(new Vector3(angle, 90, 0) * power, ForceMode.Force);
         }
+        if (other.gameObject.CompareTag("Balls"))
+        {
+            other.gameObject.GetComponent<Rigidbody>().AddForce(new Vector3(angle, 90, 0) * power, ForceMode.Force);
+        }
     }
 }
