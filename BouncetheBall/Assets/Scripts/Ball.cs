@@ -21,6 +21,7 @@ public class Ball : MonoBehaviour
         if (collision.gameObject.CompareTag("Basket"))
         {
             gameManager.Basket();
+           
         }
         if (collision.gameObject.CompareTag("Down"))
         {
@@ -37,12 +38,14 @@ public class Ball : MonoBehaviour
             gameManager.DownorUpBasket("UpBasket");
         }
         
+        
     }
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("UP"))
         {
             gameManager.DownorUpBasket("UP");
+           
         }
     }
 

@@ -4,38 +4,47 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] GameObject platform,leftSide,rightSide,ball;
+    [Header("----- PLATFORM -----")]
+    [SerializeField] GameObject platform;
+
+    [SerializeField] GameObject ball;
     Vector3 firsPos, lastPos;
-    [SerializeField] List<GameObject> ticks=new List<GameObject>();
-    int number =0;
-    [SerializeField]int basketNumber;
-    [SerializeField] GameObject upBasket, downBasket,basket;
+    [Header("----- BALL-AND-BASKET -----")]
+    [SerializeField] List<GameObject> ticks = new List<GameObject>();
+    int number = 0;
+    [SerializeField] int basketNumber;
+    [SerializeField] GameObject upBasket, downBasket, basket;
+    [Header("----- AWARD -----")]
+    float platrformLSY;
     [SerializeField] List<GameObject> basketWeights = new List<GameObject>();
     int basketWeightsNumber;
-    float platformLSY;
     [SerializeField] float awardTime;
-    [SerializeField] List<GameObject>balls =new List<GameObject>();
+    [SerializeField] List<GameObject> balls = new List<GameObject>();
     public float time;
     bool ballsActive;
+    public int activeItem;
+    [Header("-----SOUNDS-----")]
+    [SerializeField] List<AudioSource> audioSources = new List<AudioSource>();
+
     void Start()
     {
         InvokeRepeating("_BasketWeights", 2f, awardTime);
-        platformLSY = platform.transform.localScale.y;
+        basketWeightsNumber = Random.Range(0, basketWeights.Count);
+        platrformLSY = platform.transform.localScale.y;
     }
 
     void Update()
     {
 
         ActiveFalseBalls();
-
     }
     void ActiveFalseBalls()
     {
         if (ballsActive == true)
         {
             time += Time.deltaTime;
-            print((int)time);
-            if (time >= 5)
+
+            if (time >= 7)
             {
                 foreach (var item in balls)
                 {
@@ -43,31 +52,33 @@ public class GameManager : MonoBehaviour
                     item.gameObject.SetActive(false);
                 }
                 time = 0;
-                ballsActive= false;
+                ballsActive = false;
             }
         }
-        
+
     }
     public void DownorUpBasket(string name)
     {
-        if (name=="UpBasket")
+        if (name == "UpBasket")
         {
             downBasket.SetActive(false);
             basket.SetActive(true);
         }
-        else if(name=="DownBasket")
+        else if (name == "DownBasket")
         {
-            basket.SetActive(false) ;
+            basket.SetActive(false);
         }
         else if (name == "UP")
         {
             downBasket.SetActive(true);
             basket.SetActive(false);
+            SoundsPlay(0);
         }
-        
+
     }
     public void Basket()
     {
+        SoundsPlay(1);
         if (number < basketNumber)
         {
             number++;
@@ -81,17 +92,17 @@ public class GameManager : MonoBehaviour
     }
     public void Lose()
     {
-        print("LOse");
+
     }
 
     public void Move()
     {
-        
+
         Vector3 pos = Input.mousePosition;
         pos.z = 0;
         lastPos = pos;
-        Vector3 dif = lastPos-firsPos;
-        platform.transform.position += new Vector3(dif.x,0,0)*Time.deltaTime;
+        Vector3 dif = lastPos - firsPos;
+        platform.transform.position += new Vector3(dif.x, 0, 0) * Time.deltaTime;
         ExpansionPos();
         firsPos = lastPos;
     }
@@ -103,20 +114,44 @@ public class GameManager : MonoBehaviour
     }
     void _BasketWeights()
     {
-        basketWeightsNumber = Random.Range(0, basketWeights.Count);
-        basketWeights[basketWeightsNumber].SetActive(true); 
+
+
+        if (basketWeights[basketWeightsNumber].GetComponent<Expansion>().activeHave == false)
+        {
+            basketWeights[basketWeightsNumber].SetActive(true);
+            basketWeights[basketWeightsNumber].GetComponent<Expansion>().activeHave = true;
+
+        }
+        else
+        {
+            if (activeItem < basketWeights.Count)
+            {
+                basketWeightsNumber = Random.Range(0, basketWeights.Count);
+                Invoke("_BasketWeights", 0);
+
+            }
+            else
+            {
+                CancelInvoke("_BasketWeights");
+            }
+
+        }
+
+
     }
     public void Expansion(string name)
     {
         switch (name)
         {
             case "Expansion":
-                
-                    platform.transform.localScale = new Vector3(platform.transform.localScale.x, -67, platform.transform.localScale.z);
+
+                platform.transform.localScale = new Vector3(platform.transform.localScale.x, -67, platform.transform.localScale.z);
+
                 break;
-            case "Minimization":  
-                    platform.transform.localScale = new Vector3(platform.transform.localScale.x, -17, platform.transform.localScale.z);
-                    break;
+            case "Minimization":
+                platform.transform.localScale = new Vector3(platform.transform.localScale.x, -17, platform.transform.localScale.z);
+
+                break;
 
             case "Replication":
 
@@ -132,26 +167,27 @@ public class GameManager : MonoBehaviour
                     balls[1].transform.position = new Vector3(ball.transform.position.x - 1, ball.transform.position.y + 1, ball.transform.position.z);
                     balls[1].SetActive(true);
                 }
-                
+
                 break;
         }
-       
+
     }
     void ExpansionPos()
     {
-        if (platformLSY > platform.transform.localScale.y)
-        {
-            platform.transform.position = new Vector3(Mathf.Clamp(platform.transform.position.x,-.95f, .95f), platform.transform.position.y, 0);
-        }
-        else if (platformLSY < platform.transform.localScale.y)
-        {
-            platform.transform.position = new Vector3(Mathf.Clamp(platform.transform.position.x,-2,2), platform.transform.position.y, 0);
-        }
-        else if (platformLSY == platform.transform.localScale.y)
-        {
+        if (platform.transform.localScale.y < platrformLSY)
+            platform.transform.position = new Vector3(Mathf.Clamp(platform.transform.position.x, -.95f, .95f), platform.transform.position.y, 0);
+        if (platform.transform.localScale.y > platrformLSY)
+            platform.transform.position = new Vector3(Mathf.Clamp(platform.transform.position.x, -2, 2), platform.transform.position.y, 0);
+        if (platform.transform.localScale.y == platrformLSY)
             platform.transform.position = new Vector3(Mathf.Clamp(platform.transform.position.x, -1.5f, 1.5f), platform.transform.position.y, 0);
-        }
+
+
+
     }
-    
+
+    public void SoundsPlay(int soundIndex)
+    {
+        audioSources[soundIndex].Play();
+    }
 }
 

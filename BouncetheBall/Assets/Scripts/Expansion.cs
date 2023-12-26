@@ -6,16 +6,20 @@ public class Expansion : MonoBehaviour
 {
     [SerializeField] GameManager gameManager;
     [SerializeField] string namee;
+    public string itemName;
+    public bool activeHave;
 
     private void Start()
     {
         StartCoroutine(NoActive());
+        gameManager.activeItem++;
+        
     }
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            
+
             gameManager.Expansion(namee);
             gameObject.SetActive(false);
         }
@@ -23,7 +27,9 @@ public class Expansion : MonoBehaviour
     }
     IEnumerator NoActive()
     {
-            yield return new WaitForSeconds(3);
-            gameObject.SetActive(false);  
+        
+        yield return new WaitForSeconds(3);
+        gameObject.SetActive(false);
+      
     }
 }
